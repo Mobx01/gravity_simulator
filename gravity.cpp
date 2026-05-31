@@ -72,6 +72,7 @@ int main(int argc , char* argv[]){
         //LOGICs
 
 
+
         float dt = GetFrameTime(); //time for each frame
 
         //keyboard reponse(assumption that on clicking utton we are applying velocity on object)
@@ -89,6 +90,21 @@ int main(int argc , char* argv[]){
             rec.position.x += rec.velocity.x;
             rec.position.y += rec.velocity.y;
         }
+
+
+        //boundary
+        for(auto& rec : rectangles) {
+            // Check right wall OR left wall
+            if ((rec.position.x + rec.size.x >= screenwidth) || (rec.position.x <= 0)) {
+               rec.velocity.x = -rec.velocity.x;
+            }
+            // Check bottom wall OR top wall
+            if ((rec.position.y + rec.size.y >= screenheight) || (rec.position.y <= 0)) {
+               rec.velocity.y = -rec.velocity.y;
+            }
+        }
+
+
 
         //rendering
         BeginDrawing();
