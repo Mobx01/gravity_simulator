@@ -48,7 +48,7 @@ int main(int argc , char* argv[]){
     //intilizing the objects
     vector<rectangle> rectangles(1);
     vector<Vector2> pos_s = {{screenwidth/2,screenheight/2}};
-    vector<Vector2> vel_s = {{50,-70}};
+    vector<Vector2> vel_s = {{340,-140}};
     vector<Vector2> size_s = {{20,30}};
     int i =0;
     for(auto& rec : rectangles){
@@ -58,9 +58,12 @@ int main(int argc , char* argv[]){
         i++;
     }
 
-    const float gravity = 98;
+    // values
+
+    const float coef_of_resistution = 0.6;// for this world 
+    const float gravity = 980; // treating 100pixel as 1 meter
     Vector2 external_accln = {0,gravity};
-    int single_push = 500;
+    int single_push = 5000;
     rectangle& controlled = rectangles[0];
 
 
@@ -109,23 +112,23 @@ int main(int argc , char* argv[]){
             // Check Right Wall
             if (rec.position.x + rec.size.x >= screenwidth) {
                rec.position.x = screenwidth - rec.size.x; // Snap to right edge
-               rec.velocity.x = -rec.velocity.x;          // Bounce
+               rec.velocity.x = -rec.velocity.x*coef_of_resistution;          // Bounce
             }
             // Check Left Wall
             else if (rec.position.x <= 0) {
                rec.position.x = 0;                        // Snap to left edge
-               rec.velocity.x = -rec.velocity.x;          // Bounce
+               rec.velocity.x = -rec.velocity.x*coef_of_resistution;          // Bounce
             }
 
             // Check Bottom Wall (Floor)
             if (rec.position.y + rec.size.y >= screenheight) {
                rec.position.y = screenheight - rec.size.y; // Snap exactly to floor
-               rec.velocity.y = -rec.velocity.y;           // Bounce
+               rec.velocity.y = -rec.velocity.y*coef_of_resistution;           // Bounce
             }
             // Check Top Wall (Ceiling)
             else if (rec.position.y <= 0) {
                rec.position.y = 0;                        // Snap to ceiling
-               rec.velocity.y = -rec.velocity.y;          // Bounce
+               rec.velocity.y = -rec.velocity.y*coef_of_resistution;          // Bounce
             }
         }
 
