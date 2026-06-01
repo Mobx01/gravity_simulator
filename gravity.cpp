@@ -62,6 +62,7 @@ int main(int argc , char* argv[]){
 
     const float coef_of_resistution = 0.6;// for this world 
     const float gravity = 980; // treating 100pixel as 1 meter
+    const float friction_coef = 0.02;
     Vector2 external_accln = {0,gravity};
     int single_push = 5000;
     rectangle& controlled = rectangles[0];
@@ -78,7 +79,6 @@ int main(int argc , char* argv[]){
     while(!WindowShouldClose()){
 
         //LOGICs
-
 
 
         float dt = GetFrameTime(); //time for each frame
@@ -101,9 +101,28 @@ int main(int argc , char* argv[]){
             //apply accelaration (v = u + at)
             rec.velocity.x += rec.accelartion.x*dt;
             rec.velocity.y += rec.accelartion.y*dt;
+
+
+            // apply friction
+            if(rec.position.y + rec.size.y >= screenheight) {
+                float friction_drop = gravity * friction_coef * dt;
+                
+                if (rec.velocity.x > 0) {
+                    rec.velocity.x -= friction_drop;
+                    if (rec.velocity.x < 0) rec.velocity.x = 0; // Prevent jittering backward
+                } else if (rec.velocity.x < 0) {
+                    rec.velocity.x += friction_drop;
+                    if (rec.velocity.x > 0) rec.velocity.x = 0; // Prevent jittering forward
+                }
+            }
+
+
+
             //apply velocity ( sf = si + v*t )
             rec.position.x += rec.velocity.x*dt;
             rec.position.y += rec.velocity.y*dt;
+
+            
         }
 
 
