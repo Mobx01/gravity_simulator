@@ -43,11 +43,12 @@ int main(int argc , char* argv[]){
     const int screenwidth = 970;//scrren width
     const int screenheight= 1000;//scrren height
     
+    
 
     //intilizing the objects
     vector<rectangle> rectangles(1);
     vector<Vector2> pos_s = {{screenwidth/2,screenheight/2}};
-    vector<Vector2> vel_s = {{0.5,0.2}};
+    vector<Vector2> vel_s = {{50,-70}};
     vector<Vector2> size_s = {{20,30}};
     int i =0;
     for(auto& rec : rectangles){
@@ -57,12 +58,16 @@ int main(int argc , char* argv[]){
         i++;
     }
 
-    int single_push = 1;
+    const float gravity = 98;
+    Vector2 external_accln = {0,gravity};
+    int single_push = 500;
     rectangle& controlled = rectangles[0];
+
 
     // initializing the window
     InitWindow(screenwidth,screenheight,"Gravity Simulator");//initialize the window 
     SetTargetFPS(60);
+
 
 
     // Simulation loop(rendering loop)
@@ -76,31 +81,51 @@ int main(int argc , char* argv[]){
         float dt = GetFrameTime(); //time for each frame
 
         //keyboard reponse(assumption that on clicking utton we are applying velocity on object)
-        if(IsKeyDown(KEY_UP)) controlled.velocity.y -= single_push;
-        if(IsKeyDown(KEY_DOWN)) controlled.velocity.y += single_push;
-        if(IsKeyDown(KEY_LEFT)) controlled.velocity.x -= single_push;
-        if(IsKeyDown(KEY_RIGHT)) controlled.velocity.x += single_push;
+        if(IsKeyDown(KEY_UP)) controlled.velocity.y -= single_push*dt;
+        if(IsKeyDown(KEY_DOWN)) controlled.velocity.y += single_push*dt;
+        if(IsKeyDown(KEY_LEFT)) controlled.velocity.x -= single_push*dt;
+        if(IsKeyDown(KEY_RIGHT)) controlled.velocity.x += single_push*dt;
 
-        // updating position and velocity
+
+
+        // updating position , velocity and accelaration
         for(auto& rec : rectangles){
-            //apply accelaration
-            rec.velocity.x += rec.accelartion.x;
-            rec.velocity.y += rec.accelartion.y;
-            //apply velocity
-            rec.position.x += rec.velocity.x;
-            rec.position.y += rec.velocity.y;
+            //updating accelaration (external acc)
+            rec.accelartion.x = external_accln.x;
+            rec.accelartion.y = external_accln.y;
+
+
+            //apply accelaration (v = u + at)
+            rec.velocity.x += rec.accelartion.x*dt;
+            rec.velocity.y += rec.accelartion.y*dt;
+            //apply velocity ( sf = si + v*t )
+            rec.position.x += rec.velocity.x*dt;
+            rec.position.y += rec.velocity.y*dt;
         }
 
 
         //boundary
         for(auto& rec : rectangles) {
-            // Check right wall OR left wall
-            if ((rec.position.x + rec.size.x >= screenwidth) || (rec.position.x <= 0)) {
-               rec.velocity.x = -rec.velocity.x;
+            // Check Right Wall
+            if (rec.position.x + rec.size.x >= screenwidth) {
+               rec.position.x = screenwidth - rec.size.x; // Snap to right edge
+               rec.velocity.x = -rec.velocity.x;          // Bounce
             }
-            // Check bottom wall OR top wall
-            if ((rec.position.y + rec.size.y >= screenheight) || (rec.position.y <= 0)) {
-               rec.velocity.y = -rec.velocity.y;
+            // Check Left Wall
+            else if (rec.position.x <= 0) {
+               rec.position.x = 0;                        // Snap to left edge
+               rec.velocity.x = -rec.velocity.x;          // Bounce
+            }
+
+            // Check Bottom Wall (Floor)
+            if (rec.position.y + rec.size.y >= screenheight) {
+               rec.position.y = screenheight - rec.size.y; // Snap exactly to floor
+               rec.velocity.y = -rec.velocity.y;           // Bounce
+            }
+            // Check Top Wall (Ceiling)
+            else if (rec.position.y <= 0) {
+               rec.position.y = 0;                        // Snap to ceiling
+               rec.velocity.y = -rec.velocity.y;          // Bounce
             }
         }
 
