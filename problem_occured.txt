@@ -1,0 +1,11 @@
+1.Sticky Floor(or Tunneling) bug
+-> Because you have constant gravity pulling it down, the rectangle will often sink a few pixels past the bottom of the screen before the frame renders.
+When your boundary check spots this, it successfully reverses the velocity to make it go up. However, in the very next frame, gravity pushes it right back down before it has time to escape the boundary. Your rectangle ends up trapped, flipping its velocity back and forth between up and down while slowly vibrating through the floor.
+
+FIX- when the rectangle hits a wall, you can't just reverse the velocity. You also need to physically force the rectangle back onto the edge of the screen so it isn't trapped outside. 
+   -you must explicitly set the rectangle's position to sit exactly on the edge of the screen whenever it tries to go out of bounds. This is called position clamping.
+
+
+2. THE SLINGSHOT bug
+-> If two of your rectangles get really close to each other, the distance (r) gets extremely close to 0. If you divide by a tiny number, the acceleration becomes infinite. Your objects will slingshot off the screen at the speed of light.To fix this, game developers add a Softening Parameter—a small number added to the distance so it can never truly be zero.
+FIX - add a Softening Parameter—a small number added to the distance so it can never truly be zero.
