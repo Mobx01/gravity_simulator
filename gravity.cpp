@@ -6,9 +6,9 @@
 
 using namespace std;
 
-// ==========================================
-// NEW: WORLD CONTEXT STRUCT
-// ==========================================
+
+// WORLD CONTEXT STRUCT
+
 struct WorldContext {
     int screenwidth;
     int screenheight;

@@ -1,4 +1,4 @@
-// this version separates logic into functions!
+// this version apply mutual gravitational force between bodies.(simulating solar systme)
 #include <raylib.h>
 #include <iostream>
 #include <string>
@@ -155,3 +155,8 @@ int main(int argc , char* argv[]) {
     CloseWindow();
     return 0;
 }
+
+/*
+g++ space.cpp -o engine -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
+./engine
+*/
